@@ -1,0 +1,1 @@
+export const USER_ROLE = ['restaurant','client'] as const
