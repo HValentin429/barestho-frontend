@@ -1,24 +1,13 @@
 import React from 'react';
 import { IChat } from '../interfaces/IChat';
 import Avatar from '../../common/components/Avatar';
+import formatDateTimeToday from '../../common/helpers/FormatDateTodayOrNot';
 
 const ChatCard: React.FC<{ chat: IChat, handleCardClick: any }> = ({ chat,handleCardClick }) => {
-  const formatDateTime = (dateString: string) => {
-    const date = new Date(dateString);
-    const today = new Date();
-    
-    const isToday =
-        date.getDate() === today.getDate() &&
-        date.getMonth() === today.getMonth() &&
-        date.getFullYear() === today.getFullYear();
-
-    return isToday
-        ? date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) // Show time if today
-        : date.toLocaleDateString([], { month: 'short', day: 'numeric' });    // Show date if not today
-};
+  
 
   const formattedDateOrTime = chat.last_message?.created_at
-    ? formatDateTime(chat.last_message.created_at)
+    ? formatDateTimeToday(chat.last_message.created_at)
     : '';
 
   const truncatedMessage = chat.last_message?.message.length > 50
@@ -37,7 +26,7 @@ const ChatCard: React.FC<{ chat: IChat, handleCardClick: any }> = ({ chat,handle
               <span className="flex text-sm text-gray-400">{formattedDateOrTime}</span>
             </div>
             <span className="text-xs text-gray-400 relative after:content-[''] after:block after:w-full after:h-px after:bg-gray-400 after:absolute after:bottom-0 after:left-0 after:translate-y-2">
-              {truncatedMessage || '‏‏‎ ‎'}
+              {truncatedMessage || 'Commencer une conversation'}
             </span>
           </div>
         </div>

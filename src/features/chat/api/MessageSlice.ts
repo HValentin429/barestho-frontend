@@ -1,18 +1,18 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IMessage } from '../interfaces/IMessage';
 
-interface WebSocketState {
+interface messagesState {
   messages: IMessage[];
   isConnected: boolean;
 }
 
-const initialState: WebSocketState = {
+const initialState: messagesState = {
   messages: [],
   isConnected: false,
 };
 
 const messagesReducer = createSlice({
-  name: 'webSocket',
+  name: 'messages',
   initialState,
   reducers: {
     addMessage(state, action: PayloadAction<IMessage>) {
@@ -21,9 +21,12 @@ const messagesReducer = createSlice({
     setConnectionStatus(state, action: PayloadAction<boolean>) {
       state.isConnected = action.payload;
     },
+    removeAll(state) {
+      state.messages = [];
+    }
   },
 });
 
-export const { addMessage, setConnectionStatus } = messagesReducer.actions;
+export const { addMessage, setConnectionStatus, removeAll } = messagesReducer.actions;
 
 export default messagesReducer.reducer;

@@ -32,16 +32,18 @@ const ChatCard: React.FC<{}> = () => {
                      <ChatList handleCardClick={handleCardClick} />
                     </div>
                 
-                    {selectedChat && (
+                   
                      <div className='z-10 flex flex-col w-8/12 h-full p-3'>
                         <div className='flex-shrink-1 align-center'>
                             <Navbar />
                         </div>
-                        <div className='z-10 flex flex-col w-full h-full overflow-y-auto'>
-                            <MessageList selectedChat={selectedChat} />
-                        </div>
+                        {selectedChat && (
+                            <div className='z-10 flex flex-col w-full h-full overflow-y-auto'>
+                                <MessageList selectedChat={selectedChat} />
+                            </div>
+                        )}
                  </div>
-                    )}
+                    
                 </div>
                 }
             </div>

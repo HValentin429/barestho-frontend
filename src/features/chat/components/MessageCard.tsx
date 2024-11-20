@@ -4,7 +4,6 @@ import Avatar from '../../common/components/Avatar';
 
 const Message: React.FC<{ message: IMessage, isRestaurantPath: boolean, isSender?: boolean, senderName?: string }> = ({ message, isRestaurantPath, senderName }) => {
     const isOtherParty = (isRestaurantPath && message.sender !== "restaurant") || (!isRestaurantPath && message.sender === "restaurant");
-    console.log(isRestaurantPath, message.sender);
     return isOtherParty ? (
         <div className="flex flex-col w-full justify-start pr-3 pl-3 pb-3">
            <span className="text-xs text-gray-500 ml-[55px] mb-1">{senderName}</span>

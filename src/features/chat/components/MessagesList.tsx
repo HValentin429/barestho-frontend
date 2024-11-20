@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useCreateMessageMutation, useGetMessagesQuery } from '../api/MessageAPI';
-import { addMessage, setConnectionStatus } from '../api/MessageSlice';
+import { addMessage, removeAll, setConnectionStatus } from '../api/MessageSlice';
 import { IMessage } from '../interfaces/IMessage';
 import { IChat } from '../interfaces/IChat';
 
@@ -14,6 +14,8 @@ import AudioMessage  from "../../../assets/icones/microphone.svg?react";
 import bbarestho from "../../../assets/icones/b-barestho.svg";
 
 import Message from './MessageCard';
+import { removeNotification } from '../../notification/api/NotificationSlice';
+import { INotification } from '../../notification/interfaces/INotification';
 
 const MessageList: React.FC<{ selectedChat: IChat }> = ({ selectedChat }) => {
 
@@ -23,9 +25,11 @@ const MessageList: React.FC<{ selectedChat: IChat }> = ({ selectedChat }) => {
     const { data: initialMessages, error: initialError, isLoading: isInitialLoading } = useGetMessagesQuery(chatId);
     const [createMessage] = useCreateMessageMutation();
 
-    const messages = useSelector((state: any) => state.webSocket.messages); 
+    const messages = useSelector((state: any) => state.messages.messages); 
     const isRestaurantPath = location.pathname.includes('restaurant');
     const isMobile = useSelector((state: any) => state.mobile.isMobile);
+    const notifications = useSelector((state: any) => state.notifications.notifications);
+
 
     const dispatch = useDispatch();
 
@@ -69,7 +73,19 @@ const MessageList: React.FC<{ selectedChat: IChat }> = ({ selectedChat }) => {
 
     useEffect(() => {
         setMessage('');
+        dispatch(removeAll());
+        const notification = notifications.find((notification: INotification) => notification.origin === chatId.toString());
+
+        if (notification) {
+            dispatch(removeNotification(notification.id)); 
+        }
+
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
     }, [chatId]);
+
+
 
     useEffect(() => {
         if (initialMessages) {
@@ -103,21 +119,23 @@ const MessageList: React.FC<{ selectedChat: IChat }> = ({ selectedChat }) => {
     };
 
     return (
-        <div className={`relative flex flex-col w-full h-full justify-center items-center`}>
+        <div className='z-10 flex flex-col flex-grow w-full h-11/12 items-center  pr-3 pl-3 pb-3 overflow-y-auto'>
+
             {!isMobile && <img src={bbarestho} alt="Barestho" className="absolute h-1/2 object-cover opacity-20 z-0" />}
 
-            <div className='z-10 flex flex-col flex-grow w-full min-h-11/12 items-center justify-end pr-3 pl-3 pb-3 overflow-y-scroll'>
-                {messages.map((message: IMessage, index: number) => (
+            <div className='z-10 flex flex-col-reverse flex-grow w-full min-h-11/12 items-center pr-3 pl-3 pb-3 overflow-y-scroll'>
+                <div ref={messagesEndRef} />
+                {messages.toReversed().map((message: IMessage, index: number) => (
                     <Message key={index} message={message} isRestaurantPath={isRestaurantPath} senderName={isRestaurantPath && message.sender === "restaurant" ? selectedChat?.restaurant : selectedChat?.client} />
                 ))}
-                <div ref={messagesEndRef} />
+             
             </div>
     
             <div  className={`z-10 flex w-9/12 h-8 items-center rounded-full p-1 pr-0 ${
-                        isMobile ? 'bg-gray-600' : 'bg-light-gray'
+                        isMobile ? 'bg-gray-600' : 'bg-gray-200'
                     }`}>
                 <Attachment
-                    className={`h-6 w-6 flex-shrink-0 rounded-full ${
+                    className={`h-5 w-5 flex-shrink-0 rounded-full ${
                         isMobile ? 'text-gray-200' : 'text-gray-600'
                     }`}
                 />
@@ -136,20 +154,23 @@ const MessageList: React.FC<{ selectedChat: IChat }> = ({ selectedChat }) => {
                         }
                     }}
                 />
-                <AudioMessage
-                    className={`h-6 w-6 flex-shrink-0 rounded-full ${
-                        isMobile ? 'text-gray-200' : 'text-gray-600'
-                    }`}
-                />
-                <div className='flex h-8 w-8 flex-shrink-0 bg-secondary rounded-full justify-center items-center'>
-                    <Send 
-                        className='h-6 w-6 flex-shrink-0 bg-secondary rounded-full' 
-                        onClick={(e: any) => {
-                            e.preventDefault(); 
-                            handleSendMessage(); 
-                        }} 
+                <div className='flex flex-row justify-end items-center gap-3'>
+                    <AudioMessage
+                        className={`h-5 w-5 flex-shrink-0 rounded-full ${
+                            isMobile ? 'text-gray-200' : 'text-gray-600'
+                        }`}
                     />
+                    <div className='flex h-8 w-8 flex-shrink-0 bg-secondary rounded-full justify-center items-center'>
+                        <Send 
+                            className='h-5 w-5 flex-shrink-0 bg-secondary rounded-full' 
+                            onClick={(e: any) => {
+                                e.preventDefault(); 
+                                handleSendMessage(); 
+                            }} 
+                        />
+                    </div>
                 </div>
+              
             </div>
         </div>
     );
