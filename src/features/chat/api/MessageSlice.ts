@@ -1,23 +1,29 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IMessage } from '../interfaces/IMessage';
 
-interface MessageState {
+interface WebSocketState {
   messages: IMessage[];
+  isConnected: boolean;
 }
 
-const initialState: MessageState = {
+const initialState: WebSocketState = {
   messages: [],
+  isConnected: false,
 };
 
-const messageSlice = createSlice({
-  name: 'messages',
+const messagesReducer = createSlice({
+  name: 'webSocket',
   initialState,
   reducers: {
-    addMessage: (state, action: PayloadAction<IMessage>) => {
-      state.messages.push(action.payload); 
+    addMessage(state, action: PayloadAction<IMessage>) {
+      state.messages.push(action.payload);
+    },
+    setConnectionStatus(state, action: PayloadAction<boolean>) {
+      state.isConnected = action.payload;
     },
   },
 });
 
-export const { addMessage } = messageSlice.actions;
-export default messageSlice.reducer;
+export const { addMessage, setConnectionStatus } = messagesReducer.actions;
+
+export default messagesReducer.reducer;

@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { IMessage } from '../interfaces/IMessage';
+import { addMessage } from './MessageSlice';
 
 export const messageAPI = createApi({
   reducerPath: 'messageApi',
@@ -13,16 +14,16 @@ export const messageAPI = createApi({
     }),
 
     createMessage: builder.mutation<IMessage, { chatId: number, message: string, sender: string }>({
-        query: ({ chatId, message, sender }) => ({
-          url: `chat/${chatId}/messages/`,
-          method: 'POST',
-          body: { message, chat: chatId, sender }, 
-        }),
+      query: ({ chatId, message, sender }) => ({
+        url: `chat/${chatId}/messages/`,
+        method: 'POST',
+        body: { message, chat: chatId, sender }, 
       }),
+    }),
   }),
 });
 
 export const { 
   useGetMessagesQuery, 
-  useCreateMessageMutation, 
+  useCreateMessageMutation,
 } = messageAPI;
